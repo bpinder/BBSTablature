@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2B3B443C-10BE-4A8D-5D2B-904200E7416A}") = "Tablature", "Tablature.vcxproj", "{40315CF3-8EA5-4E1B-1544-35DB96E430AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40315CF3-8EA5-4E1B-1544-35DB96E430AC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{40315CF3-8EA5-4E1B-1544-35DB96E430AC}.Debug|Win32.Build.0 = Debug|Win32
+		{40315CF3-8EA5-4E1B-1544-35DB96E430AC}.Release|Win32.ActiveCfg = Release|Win32
+		{40315CF3-8EA5-4E1B-1544-35DB96E430AC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

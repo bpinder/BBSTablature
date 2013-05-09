@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/bellebonnesage/!svn/ver/629/trunk/Source/Modern
+END
+Chord.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Chord.h
+END
+Spring.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Spring.h
+END
+Beaming.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Beaming.h
+END
+Cache.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Cache.h
+END
+Utility.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Utility.h
+END
+Directory.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Directory.h
+END
+Stem.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Stem.h
+END
+Clef.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Clef.h
+END
+KeySignature.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/KeySignature.h
+END
+Island.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Island.h
+END
+Custom.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Custom.h
+END
+Meter.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Meter.h
+END
+Barline.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Barline.h
+END
+State.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/State.h
+END
+House.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/House.h
+END
+Stamp.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/bellebonnesage/!svn/ver/625/trunk/Source/Modern/Stamp.h
+END
+Modern.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Modern.h
+END
+System.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/bellebonnesage/!svn/ver/629/trunk/Source/Modern/System.h
+END
+Selection.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Selection.h
+END
+Piece.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/bellebonnesage/!svn/ver/622/trunk/Source/Modern/Piece.h
+END
