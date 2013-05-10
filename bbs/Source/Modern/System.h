@@ -44,6 +44,16 @@
 
 namespace bellebonnesage { namespace modern
 {
+  ///Describes a staff in a system
+  struct StaffInfo
+  {
+    ///The number of staff lines
+    prim::count Lines;
+
+    ///Whether the staff is tablature
+    bool IsTab;
+  };
+
   ///Describes a list of stamp instants and their positions.
   struct System
   {
@@ -61,6 +71,9 @@ namespace bellebonnesage { namespace modern
     
     ///Staff uses staff lines.
     prim::Array<bool> HasStaffLines;
+
+    ///The staves in the system
+    prim::Array<StaffInfo> Staves;
     
     ///Total height of the box that would bound the system.
     prim::number SystemHeight;
@@ -197,7 +210,7 @@ namespace bellebonnesage { namespace modern
       signature with a clef [0] and then immediate change of clef [1]. A
       better approach would be to determine if the stamp is dependent or
       independent.*/
-      for(prim::count i = 2; i < Instants.n(); i++)
+      for(prim::count i = 3; i < Instants.n(); i++)
       {
         for(prim::count j = 0; j < Instants[i].n(); j++)
         {
@@ -245,10 +258,11 @@ namespace bellebonnesage { namespace modern
       prim::number ExtraSpacePerInstant = ExtraSpace /
         (prim::number)(InstantPositions.n() - 1);
       
-      //Add equal extra space.
-      for(prim::count i = 0; i < InstantPositions.n(); i++)
+      //Add equal extra space. Starting at 1 so that the PartToken
+      //at the beginning of each staff isn't given any space
+      for(prim::count i = 1; i < InstantPositions.n(); i++)
       {
-        InstantPositions[i] += ((prim::number)i) * ExtraSpacePerInstant;
+        InstantPositions[i] += ((prim::number)i - 1) * ExtraSpacePerInstant;
       }
     }
     
@@ -256,8 +270,9 @@ namespace bellebonnesage { namespace modern
     
     ///Paints the system.
     void Paint(Painter& Painter, prim::planar::Vector BottomLeftPosition =
-      prim::planar::Vector(), prim::number SpaceHeight = 1.0,
-      ClickThroughManager* CTM = 0, bool GuessBrace = true)
+      prim::planar::Vector(), prim::number SpaceHeight = 1.0, 
+      prim::number TabSpaceRatio = 1.5, ClickThroughManager* CTM = 0, 
+      bool GuessBrace = true)
     {
       prim::number LineThickness = 0.15;
     
@@ -284,12 +299,19 @@ namespace bellebonnesage { namespace modern
         Shapes::AddLine(p, prim::planar::Vector(LineThickness * 0.5, 0),
           prim::planar::Vector(Bounds.Right() - LineThickness * 0.5, 0),
           LineThickness);
-        for(prim::count i = 0; i < Instants.a().n(); i++)
+        if (Staves.n() == Instants.a().n())
         {
-          if(!HasStaffLines[i]) continue;
-          for(prim::count j = -2; j <= 2; j++)
-            Painter.Draw(p, Affine::Translate(prim::planar::Vector(0,
-              StaffHeights[i] + (prim::number)j)));
+          for(prim::count i = 0; i < Instants.a().n(); i++)
+          {
+            if(!HasStaffLines[i]) continue;
+
+            prim::number lineRange = (Staves[i].Lines - 1) * 0.5;
+
+            for(prim::number j = -lineRange; j <= lineRange; j++)
+              Painter.Draw(p, Affine::Translate(prim::planar::Vector(0,
+              StaffHeights[i] + 
+              (j * (Staves[i].IsTab ? TabSpaceRatio : 1.0)))));
+          }
         }
       }
       
@@ -322,7 +344,7 @@ namespace bellebonnesage { namespace modern
       }
       
       //Paint the brace.
-      if(GuessBrace && StaffHeights.n() == 2 + 1) //Assume piano for the moment.
+      /*if(GuessBrace && StaffHeights.n() == 2 + 1) //Assume piano for the moment.
       {
         Path p;
         Shapes::Music::AddBrace(p,
@@ -330,7 +352,7 @@ namespace bellebonnesage { namespace modern
           StaffHeights[0] - StaffHeights[1] + 3.0);
         Painter.SetFill(Colors::black);
         Painter.Draw(p);
-      }
+      }*/
       
 #if 0
       //Paint the bounding box.

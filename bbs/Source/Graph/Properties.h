@@ -80,6 +80,7 @@ namespace bellebonnesage { namespace graph
     {
       MusicNode* n = dynamic_cast<MusicNode*>(g.GetTop());
       bool InitialMaterial = true;
+      bool PartAppeared = false;
       bool BarlineAppeared = false;
       bool ClefAppeared = false;
       bool KeySignatureAppeared = false;
@@ -96,7 +97,9 @@ namespace bellebonnesage { namespace graph
 
         if(InitialMaterial)
         {
-          if(graph::ID(m->GetType()) == mica::BarlineToken && !BarlineAppeared)
+          if(graph::ID(m->GetType()) == mica::Do && !PartAppeared)
+            PartAppeared = true;
+          else if(graph::ID(m->GetType()) == mica::BarlineToken && !BarlineAppeared)
           {
             p.SetRepeatingInstant();
             BarlineAppeared = true;

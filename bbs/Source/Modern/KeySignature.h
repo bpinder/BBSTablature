@@ -49,8 +49,12 @@ namespace bellebonnesage { namespace modern
   struct KeySignature
   {
     ///Engraves the different forms of key signatures.
-    static void Engrave(Directory& d, Stamp& s, graph::KeySignatureToken* kt)
+    static void Engrave(Directory& d, Stamp& s, graph::KeySignatureToken* kt, 
+      bool isOnExtraStaff = false)
     {
+      if (d.s.IsTabStaff() || (d.s.IsStandardAndTabStaff() && isOnExtraStaff)) 
+        return;
+
       if(!kt) return;
       mica::UUID k = kt->GetKeySignature();
       prim::count n = Utility::GetNumberOfAccidentals(k);

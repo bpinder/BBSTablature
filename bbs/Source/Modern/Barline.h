@@ -40,6 +40,7 @@
 #define BELLEBONNESAGE_MODERN_BARLINE_H
 
 #include "Directory.h"
+#include "State.h"
 
 namespace bellebonnesage { namespace modern
 {
@@ -47,44 +48,52 @@ namespace bellebonnesage { namespace modern
   struct Barline
   {
     ///Engrave the different forms of barline.
-    static void Engrave(Directory& d, Stamp& s, graph::BarlineToken* bt)
+    static void Engrave(Directory& d, Stamp& s, graph::BarlineToken* bt, 
+      bool isOnExtraStaff = false)
     {
       if(!bt) return;
+
+      prim::number HalfStaffHeight = 2.0;
+
+      if (d.s.IsTabStaff() || (d.s.IsStandardAndTabStaff() && isOnExtraStaff))
+        HalfStaffHeight = (d.s.ActiveInstrument->GetStrings().n() / 2.0 - 0.5) 
+          * d.h.TabSpaceHeightRatio;
       
       //Distance to the next staff in spaces (should perhaps be passed in).
-      prim::number StaffInteriorDistance = Connects(bt) ?
-        (d.h.StaffDistance - 4.0) : 0.0;
+      prim::number StaffInteriorDistance = (Connects(bt) || 
+        (d.s.IsStandardAndTabStaff() && !isOnExtraStaff)) ?
+          (d.h.StaffDistance - 4.0) : 0.0;
       
       if(bt->Value == mica::StandardBarline)
       {
-        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, 2.0),
-          prim::planar::Vector(0.0, -2.0 - StaffInteriorDistance),
+        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, HalfStaffHeight),
+          prim::planar::Vector(0.0, -HalfStaffHeight - StaffInteriorDistance),
           d.h.BarlineThickness, true, false, false);
       }
       else if(bt->Value == mica::FinalDoubleBarline)
       {
-        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, 2.0),
-          prim::planar::Vector(0.0, -2.0 - StaffInteriorDistance),
+        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, HalfStaffHeight),
+          prim::planar::Vector(0.0, -HalfStaffHeight - StaffInteriorDistance),
           d.h.BarlineThickness, true, false, false);
-        Shapes::AddLine(s.z().p, prim::planar::Vector(0.8, 2.0),
-          prim::planar::Vector(0.8, -2.0 - StaffInteriorDistance),
+        Shapes::AddLine(s.z().p, prim::planar::Vector(0.8, HalfStaffHeight),
+          prim::planar::Vector(0.8, -HalfStaffHeight - StaffInteriorDistance),
           d.h.BarlineThickness * 3.0, true, false, false);
       }
       else if(bt->Value == mica::EndRepeatBarline)
       {
-        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, 2.0),
-          prim::planar::Vector(0.0, -2.0 - StaffInteriorDistance),
+        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, HalfStaffHeight),
+          prim::planar::Vector(0.0, -HalfStaffHeight - StaffInteriorDistance),
           d.h.BarlineThickness, true, false, false);
-        Shapes::AddLine(s.z().p, prim::planar::Vector(0.8, 2.0),
-          prim::planar::Vector(0.8, -2.0 - StaffInteriorDistance),
+        Shapes::AddLine(s.z().p, prim::planar::Vector(0.8, HalfStaffHeight),
+          prim::planar::Vector(0.8, -HalfStaffHeight - StaffInteriorDistance),
           d.h.BarlineThickness * 3.0, true, false, false);
         Shapes::AddCircle(s.z().p, prim::planar::Vector(-0.8, 0.5), 0.5);
         Shapes::AddCircle(s.z().p, prim::planar::Vector(-0.8, -0.5), 0.5);
       }
       else //For as of yet unsupported features
       {
-        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, 2.0),
-          prim::planar::Vector(0.0, -2.0 - StaffInteriorDistance),
+        Shapes::AddLine(s.Add().p, prim::planar::Vector(0.0, HalfStaffHeight),
+          prim::planar::Vector(0.0, -HalfStaffHeight - StaffInteriorDistance),
           d.h.BarlineThickness, true, false, false);
         
         //Mark in red to show it is being displayed incorrectly.

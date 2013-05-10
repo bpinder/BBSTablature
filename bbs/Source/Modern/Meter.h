@@ -47,9 +47,12 @@ namespace bellebonnesage { namespace modern
   struct Meter
   {
     ///Engrave the different forms of meters.
-    static void Engrave(Directory& d, Stamp& s, graph::MeterToken* mt)
+    static void Engrave(Directory& d, Stamp& s, graph::MeterToken* mt, 
+      bool isOnExtraStaff = false)
     {
-      if(!mt) return;
+      if(!mt || d.s.IsTabStaff() || 
+        (d.s.IsStandardAndTabStaff() && isOnExtraStaff)) 
+          return;
       
       mica::UUID m = mt->Value;
       if(m != mica::CommonTime && m != mica::CutTime)

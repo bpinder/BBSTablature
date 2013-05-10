@@ -4,6 +4,16 @@
               bundleIdentifier="com.yourcompany.Tablature" jucerVersion="3.1.0">
   <MAINGROUP id="JP2BOW" name="Tablature">
     <GROUP id="{610EED7C-9F8C-E00C-4363-A3AD6859E937}" name="Source">
+      <GROUP id="{65CC8245-42D1-A34F-481E-E22D85047E39}" name="Notation">
+        <FILE id="FrpPdX" name="Notation.cpp" compile="1" resource="0" file="Source/Notation/Notation.cpp"/>
+        <FILE id="G9ANun" name="Notation.h" compile="0" resource="0" file="Source/Notation/Notation.h"/>
+        <FILE id="FilZ8W" name="Score.cpp" compile="1" resource="0" file="Source/Notation/Score.cpp"/>
+        <FILE id="JtNj0t" name="Score.h" compile="0" resource="0" file="Source/Notation/Score.h"/>
+      </GROUP>
+      <GROUP id="{52A0F542-9041-9041-4E15-7300000105FB}" name="Tools">
+        <FILE id="zD1EiJ" name="NotationHelpers.h" compile="0" resource="0"
+              file="Source/Tools/NotationHelpers.h"/>
+      </GROUP>
       <FILE id="HIbFVK" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
       <FILE id="NjVs2R" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
@@ -37,6 +47,14 @@
                        isDebug="0" optimisation="2" targetName="Tablature"/>
       </CONFIGURATIONS>
     </XCODE_MAC>
+    <VS2012 targetFolder="Builds/VisualStudio2012" juceFolder="..\..\..\..\..\Documents\juce\modules">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="1" optimisation="1" targetName="Tablature"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="2" targetName="Tablature"/>
+      </CONFIGURATIONS>
+    </VS2012>
   </EXPORTFORMATS>
   <JUCEOPTIONS/>
 </JUCERPROJECT>

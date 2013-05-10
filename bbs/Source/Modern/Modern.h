@@ -57,6 +57,7 @@
 #include "Barline.h"
 #include "Beaming.h"
 #include "Chord.h"
+#include "Tab.h"
 #include "Clef.h"
 #include "Custom.h"
 #include "KeySignature.h"

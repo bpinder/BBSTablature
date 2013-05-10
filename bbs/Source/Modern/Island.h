@@ -44,6 +44,7 @@
 #include "Barline.h"
 #include "Beaming.h"
 #include "Chord.h"
+#include "Tab.h"
 #include "Clef.h"
 #include "Custom.h"
 #include "KeySignature.h"
@@ -59,7 +60,7 @@ namespace bellebonnesage { namespace modern
     IslandEngraver(Directory& d) : DirectoryHandler(d) {}
     
     ///Engraves the island.
-    void Engrave(graph::MusicNode* n, Stamp& s)
+    void Engrave(graph::MusicNode* n, Stamp& s, bool isOnExtraStaff = false)
     {
       //Get all the tokens belonging to the island.
       prim::Node::Array<graph::Token> Tokens(n, graph::ID(mica::TokenLink));
@@ -126,7 +127,7 @@ namespace bellebonnesage { namespace modern
       for(prim::count i = 0; i < Tokens.n(); i++)
       {
         prim::count Start = s.Graphics.n();
-        EngraveToken(Tokens[i], s);
+        EngraveToken(Tokens[i], s, isOnExtraStaff);
         
         if(Tokens[i] == ShiftLeft)
           for(prim::count j = Start; j < s.Graphics.n(); j++)
@@ -216,55 +217,73 @@ namespace bellebonnesage { namespace modern
     }
 
     ///Engraves the token.
-    void EngraveToken(graph::Token* Token, Stamp& s)
+    void EngraveToken(graph::Token* Token, Stamp& s, bool isOnExtraStaff = false)
     {
-      if(graph::ChordToken* ct = dynamic_cast<graph::ChordToken*>(Token))
+      if (graph::PartToken* pt = dynamic_cast<graph::PartToken*> (Token))
       {
-        Chord ChordInfo;
-        ChordInfo.Import(ct);
-        
-        /*Need to detect any unisons or octaves with different accidentals and
-        clear their state if they have differing accidentals. Also octaves
-        with same accidentals need to report accidentals if not in active
-        state.*/
-        
-        //Determine the accidental state.
-        for(prim::count j = 0; j < ChordInfo.StaffNotes.n(); j++)
+        graph::StringedInstrument* si = 
+          dynamic_cast<graph::StringedInstrument*>(pt->Find (graph::ID (mica::TokenLink)));
+        if (si) 
+          d.s.ActiveInstrument = si;
+        else 
+          d.s.ActiveInstrument = 0;
+      }
+      else if(graph::ChordToken* ct = dynamic_cast<graph::ChordToken*>(Token))
+      {
+        if (d.s.IsTabStaff() || (d.s.IsStandardAndTabStaff() && isOnExtraStaff))
         {
-          Chord::StaffNote& sn = ChordInfo.StaffNotes[j];
-          sn.Accidental =
-            d.s.ConsumeAccidental(sn.LineSpace, sn.Accidental);
-        }
-        
-        //Read in the stem state.
-        //ChordInfo.DetermineStemDirectionByPosition();
-
-        prim::count k = -1;
-        for(prim::count i = 0; i < d.s.Current.n(); i++)
-        {
-          if(d.s.Current[i].c == ct)
-          {
-            k = i;
-            break;
-          }
-        }
-        if(k >= 0)
-        {
-          if(d.s.Current[k].d == Chord::StateInfo::PositionBased)  
-          {
-            ChordInfo.DetermineStemDirectionByPosition();
-            prim::c >> "Position based used..";
-          }
-          else
-            ChordInfo.StemUp = d.s.Current[k].d == Chord::StateInfo::Up;
+          Tab TabInfo;
+          TabInfo.Import (ct, &d.s);
+          TabInfo.Engrave (s, d.h, d.c, d.t, d.f, d.s.IsTabStaff(), d.s.IsTabStaff());
         }
         else
         {
-          prim::c >> "ChordState not found";
-        }
+          Chord ChordInfo;
+          ChordInfo.Import(ct);
+
+          /*Need to detect any unisons or octaves with different accidentals and
+          clear their state if they have differing accidentals. Also octaves
+          with same accidentals need to report accidentals if not in active
+          state.*/
         
-        //Engrave the chord.
-        ChordInfo.Engrave(s, d.h, d.c, d.t, d.f);
+          //Determine the accidental state.
+          for(prim::count j = 0; j < ChordInfo.StaffNotes.n(); j++)
+          {
+            Chord::StaffNote& sn = ChordInfo.StaffNotes[j];
+            sn.Accidental =
+              d.s.ConsumeAccidental(sn.LineSpace, sn.Accidental);
+          }
+        
+          //Read in the stem state.
+          //ChordInfo.DetermineStemDirectionByPosition();
+
+          prim::count k = -1;
+          for(prim::count i = 0; i < d.s.Current.n(); i++)
+          {
+            if(d.s.Current[i].c == ct)
+            {
+              k = i;
+              break;
+            }
+          }
+          if(k >= 0)
+          {
+            if(d.s.Current[k].d == Chord::StateInfo::PositionBased)  
+            {
+              ChordInfo.DetermineStemDirectionByPosition();
+              prim::c >> "Position based used..";
+            }
+            else
+              ChordInfo.StemUp = d.s.Current[k].d == Chord::StateInfo::Up;
+          }
+          else
+          {
+            prim::c >> "ChordState not found";
+          }
+        
+          //Engrave the chord.
+          ChordInfo.Engrave(s, d.h, d.c, d.t, d.f);
+        }
       }
       else if(graph::ClefToken* ct = dynamic_cast<graph::ClefToken*>(Token))
       {
@@ -272,24 +291,26 @@ namespace bellebonnesage { namespace modern
           1.0 : d.h.NonInitialClefSize;
         ClefSize = 1.0; //For now this is hacked after the fact.
         d.s.ActiveClef = ct->Value;
-        Clef::Engrave(d, s, d.s.ActiveClef, ClefSize);
+
+        Clef::Engrave(d, s, d.s.ActiveClef, ClefSize, isOnExtraStaff);
       }
       else if(graph::KeySignatureToken* kt =
         dynamic_cast<graph::KeySignatureToken*>(Token))
       {
         mica::UUID k = kt->GetKeySignature();
+        d.s.ActiveKey = kt->GetKey();
         d.s.SetKeySignature(k);
         d.s.ResetActiveAccidentalsToKeySignature();
-        KeySignature::Engrave(d, s, kt);
+        KeySignature::Engrave(d, s, kt, isOnExtraStaff);
       }
       else if(graph::MeterToken* mt = dynamic_cast<graph::MeterToken*>(Token))
       {
-        Meter::Engrave(d, s, mt);
+        Meter::Engrave(d, s, mt, isOnExtraStaff);
       }
       else if(graph::BarlineToken* bt =
         dynamic_cast<graph::BarlineToken*>(Token))
       {
-        Barline::Engrave(d, s, bt);
+        Barline::Engrave(d, s, bt, isOnExtraStaff);
         d.s.ResetActiveAccidentalsToKeySignature();
       }
       else

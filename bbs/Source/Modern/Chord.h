@@ -39,7 +39,7 @@
 #ifndef BELLEBONNESAGE_MODERN_CHORD_H
 #define BELLEBONNESAGE_MODERN_CHORD_H
 
-//#include "Beaming.h"
+#include "Beaming.h"
 
 namespace bellebonnesage { namespace modern
 {

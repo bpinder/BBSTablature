@@ -1,28 +1,33 @@
-#ifndef __MAINCOMPONENT_H_C6B3ECBB__
-#define __MAINCOMPONENT_H_C6B3ECBB__
+#ifndef __MAINCOMPONENT_H_208740DB__
+#define __MAINCOMPONENT_H_208740DB__
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include "Notation/Notation.h"
 
-
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
-class MainContentComponent   : public Component
+class MainContentComponent : public juce::Component,
+                             public juce::Button::Listener
 {
 public:
     //==============================================================================
     MainContentComponent();
     ~MainContentComponent();
 
-    void paint (Graphics&);
+    void paint (juce::Graphics&);
     void resized();
 
+    void buttonClicked (juce::Button* button);
+
 private:
+    //==============================================================================
+    Notation notation;
+
+    juce::TextButton loadButton;
+
+    //==============================================================================
+    bool loadXMLFile();
+    void launchErrorLoadingAlert();
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
 
 
-#endif  // __MAINCOMPONENT_H_C6B3ECBB__
+#endif  // __MAINCOMPONENT_H_208740DB__

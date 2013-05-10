@@ -165,6 +165,17 @@ namespace bellebonnesage { namespace modern
       }
       return 0;
     }
+
+    /**Converts the stringIndex of a TabbedNote to a LineSpace value that can be
+    passed through GetLineSpacePosition() to get the position.*/
+    static prim::number GetLineSpaceForTabbedNote (int stringIndex, 
+      int numStrings)
+    {
+      if (numStrings % 2)
+        return (((prim::number)numStrings / 2.0 + 0.5) - (stringIndex + 1)) * 2;
+      else
+        return ((numStrings / 2) - (stringIndex + 1)) * 2 + 1;
+    }
     
     static prim::count GetNumberOfAccidentals(mica::UUID KeySignature)
     {
@@ -178,6 +189,289 @@ namespace bellebonnesage { namespace modern
       mica::UUID PositionSequence = mica::map(Clef,
         mica::map(KeySignature, mica::Accidental));
       return GetLineSpaceIndex(mica::M(PositionSequence).Item(i));
+    }
+
+    /**Converts a note name to a midi note number. This function
+    likely won't be needed once the new MICA library is incorporated*/
+    static inline prim::count GetNoteNumberForNoteName (mica::UUID note)
+    {
+      mica::UUID octave = mica::map (note, mica::Octave);
+      prim::count octaveIndex = mica::index (mica::Octaves, 
+        octave, mica::Octave0);
+
+      mica::UUID name = mica::map (note, mica::NoteName);
+      prim::count noteIndex = 0;
+
+      //All possible names for C Sharp
+      if (name == mica::BDoubleSharp 
+        || name == mica::CSharp
+        || name == mica::DFlat
+        || name == mica::ETripleFlat)  noteIndex = 1;
+
+      //All possible names for D
+      else if (name == mica::BTripleSharp
+        || name == mica::CDoubleSharp 
+        || name == mica::D
+        || name == mica::EDoubleFlat
+        || name == mica::FTripleFlat)  noteIndex = 2;
+
+      //All possible names for D Sharp
+      else if (name == mica::CTripleSharp
+        || name == mica::DSharp
+        || name == mica::EFlat
+        || name == mica::FDoubleFlat)  noteIndex = 3;
+
+      //All possible names for E
+      else if (name == mica::DDoubleSharp 
+        || name == mica::E
+        || name == mica::FFlat
+        || name == mica::GTripleFlat)  noteIndex = 4;
+
+      //All possible names for F
+      else if (name == mica::DTripleSharp
+        || name == mica::ESharp 
+        || name == mica::F
+        || name == mica::GDoubleFlat)  noteIndex = 5;
+
+      //All possible names for F Sharp
+      else if (name == mica::EDoubleSharp 
+        || name == mica::FSharp
+        || name == mica::GFlat
+        || name == mica::ATripleFlat)  noteIndex = 6;
+
+      //All possible names for G
+      else if (name == mica::ETripleSharp
+        || name == mica::FDoubleSharp 
+        || name == mica::G
+        || name == mica::ADoubleFlat)  noteIndex = 7;
+
+      //All possible names for G Sharp
+      else if (name == mica::FTripleSharp 
+        || name == mica::GSharp
+        || name == mica::AFlat
+        || name == mica::BTripleFlat)  noteIndex = 8;
+
+      //All possible names for A
+      else if (name == mica::GDoubleSharp 
+        || name == mica::A
+        || name == mica::BDoubleFlat
+        || name == mica::CTripleFlat)  noteIndex = 9;
+
+      //All possible names for A Sharp
+      else if (name == mica::GTripleSharp
+        || name == mica::ASharp
+        || name == mica::BFlat
+        || name == mica::CDoubleFlat)  noteIndex = 10;
+
+      //All possible names for B
+      else if (name == mica::ADoubleSharp 
+        || name == mica::B
+        || name == mica::CFlat
+        || name == mica::DTripleFlat)  noteIndex = 11;
+        
+      return (octaveIndex * 12) + noteIndex;
+    }
+
+    /**Converts a midi note number to a mica::MIDIValue.This function
+    likely won't be needed once the new MICA library is incorporated*/
+    static inline mica::UUID GetMIDIValueForNoteNumber (int noteNumber)
+    {
+      switch (noteNumber)
+      {
+        case 0: return mica::MIDIValue0;
+        case 1: return mica::MIDIValue1;
+        case 2: return mica::MIDIValue2;
+        case 3: return mica::MIDIValue3;
+        case 4: return mica::MIDIValue4;
+        case 5: return mica::MIDIValue5;
+        case 6: return mica::MIDIValue6;
+        case 7: return mica::MIDIValue7;
+        case 8: return mica::MIDIValue8;
+        case 9: return mica::MIDIValue9;
+
+        case 10: return mica::MIDIValue10;
+        case 11: return mica::MIDIValue11;
+        case 12: return mica::MIDIValue12;
+        case 13: return mica::MIDIValue13;
+        case 14: return mica::MIDIValue14;
+        case 15: return mica::MIDIValue15;
+        case 16: return mica::MIDIValue16;
+        case 17: return mica::MIDIValue17;
+        case 18: return mica::MIDIValue18;
+        case 19: return mica::MIDIValue19;
+
+        case 20: return mica::MIDIValue20;
+        case 21: return mica::MIDIValue21;
+        case 22: return mica::MIDIValue22;
+        case 23: return mica::MIDIValue23;
+        case 24: return mica::MIDIValue24;
+        case 25: return mica::MIDIValue25;
+        case 26: return mica::MIDIValue26;
+        case 27: return mica::MIDIValue27;
+        case 28: return mica::MIDIValue28;
+        case 29: return mica::MIDIValue29;
+
+        case 30: return mica::MIDIValue30;
+        case 31: return mica::MIDIValue31;
+        case 32: return mica::MIDIValue32;
+        case 33: return mica::MIDIValue33;
+        case 34: return mica::MIDIValue34;
+        case 35: return mica::MIDIValue35;
+        case 36: return mica::MIDIValue36;
+        case 37: return mica::MIDIValue37;
+        case 38: return mica::MIDIValue38;
+        case 39: return mica::MIDIValue39;
+
+        case 40: return mica::MIDIValue40;
+        case 41: return mica::MIDIValue41;
+        case 42: return mica::MIDIValue42;
+        case 43: return mica::MIDIValue43;
+        case 44: return mica::MIDIValue44;
+        case 45: return mica::MIDIValue45;
+        case 46: return mica::MIDIValue46;
+        case 47: return mica::MIDIValue47;
+        case 48: return mica::MIDIValue48;
+        case 49: return mica::MIDIValue49;
+
+        case 50: return mica::MIDIValue50;
+        case 51: return mica::MIDIValue51;
+        case 52: return mica::MIDIValue52;
+        case 53: return mica::MIDIValue53;
+        case 54: return mica::MIDIValue54;
+        case 55: return mica::MIDIValue55;
+        case 56: return mica::MIDIValue56;
+        case 57: return mica::MIDIValue57;
+        case 58: return mica::MIDIValue58;
+        case 59: return mica::MIDIValue59;
+
+        case 60: return mica::MIDIValue60;
+        case 61: return mica::MIDIValue61;
+        case 62: return mica::MIDIValue62;
+        case 63: return mica::MIDIValue63;
+        case 64: return mica::MIDIValue64;
+        case 65: return mica::MIDIValue65;
+        case 66: return mica::MIDIValue66;
+        case 67: return mica::MIDIValue67;
+        case 68: return mica::MIDIValue68;
+        case 69: return mica::MIDIValue69;
+
+        case 70: return mica::MIDIValue70;
+        case 71: return mica::MIDIValue71;
+        case 72: return mica::MIDIValue72;
+        case 73: return mica::MIDIValue73;
+        case 74: return mica::MIDIValue74;
+        case 75: return mica::MIDIValue75;
+        case 76: return mica::MIDIValue76;
+        case 77: return mica::MIDIValue77;
+        case 78: return mica::MIDIValue78;
+        case 79: return mica::MIDIValue79;
+
+        case 80: return mica::MIDIValue80;
+        case 81: return mica::MIDIValue81;
+        case 82: return mica::MIDIValue82;
+        case 83: return mica::MIDIValue83;
+        case 84: return mica::MIDIValue84;
+        case 85: return mica::MIDIValue85;
+        case 86: return mica::MIDIValue86;
+        case 87: return mica::MIDIValue87;
+        case 88: return mica::MIDIValue88;
+        case 89: return mica::MIDIValue89;
+
+        case 90: return mica::MIDIValue90;
+        case 91: return mica::MIDIValue91;
+        case 92: return mica::MIDIValue92;
+        case 93: return mica::MIDIValue93;
+        case 94: return mica::MIDIValue94;
+        case 95: return mica::MIDIValue95;
+        case 96: return mica::MIDIValue96;
+        case 97: return mica::MIDIValue97;
+        case 98: return mica::MIDIValue98;
+        case 99: return mica::MIDIValue99;
+
+        case 100: return mica::MIDIValue100;
+        case 101: return mica::MIDIValue101;
+        case 102: return mica::MIDIValue102;
+        case 103: return mica::MIDIValue103;
+        case 104: return mica::MIDIValue104;
+        case 105: return mica::MIDIValue105;
+        case 106: return mica::MIDIValue106;
+        case 107: return mica::MIDIValue107;
+        case 108: return mica::MIDIValue108;
+        case 109: return mica::MIDIValue109;
+
+        case 110: return mica::MIDIValue100;
+        case 111: return mica::MIDIValue111;
+        case 112: return mica::MIDIValue112;
+        case 113: return mica::MIDIValue113;
+        case 114: return mica::MIDIValue114;
+        case 115: return mica::MIDIValue115;
+        case 116: return mica::MIDIValue116;
+        case 117: return mica::MIDIValue117;
+        case 118: return mica::MIDIValue118;
+        case 119: return mica::MIDIValue119;
+
+        case 120: return mica::MIDIValue120;
+        case 121: return mica::MIDIValue121;
+        case 122: return mica::MIDIValue122;
+        case 123: return mica::MIDIValue123;
+        case 124: return mica::MIDIValue124;
+        case 125: return mica::MIDIValue125;
+        case 126: return mica::MIDIValue126;
+        case 127: return mica::MIDIValue127;
+
+      };
+      return mica::Undefined;
+    }
+
+    ///Returns the accidental of a LineSpace given the Clef and Key
+    static inline mica::UUID GetAccidentalOfLineSpace (mica::UUID Clef, 
+      mica::UUID Key, mica::UUID LineSpace)
+    {
+      //Find the number and type of accidentals (ie: "TwoSharps")
+      mica::UUID NumAccsAndType = mica::map (Key, mica::KeySignature);  
+
+      //Find the key type (ie: "Sharp")
+      mica::UUID KeyType = mica::map (mica::Accidental, 
+        NumAccsAndType);      
+
+      //Find the clef accidentals (ie: "TrebleClefSharps")
+      mica::UUID ClefAccs = mica::map (Clef, KeyType);    
+
+      //Find the letter of the LineSpace (ie: "B")
+      mica::UUID Letter = mica::map (mica::map (Clef, LineSpace), 
+        mica::Letter);  
+
+      //Find the number of accidentals
+      int NumOfAccs = mica::index (mica::KeySignatures, NumAccsAndType,
+        mica::NoAccidentals) * (KeyType == mica::Flat ? -1 : 1);
+
+      //Determine what note letters have accidentals
+      prim::Array<mica::UUID> KeyAccLetters;
+
+      for (int i = 0; i < NumOfAccs; ++i)
+      {
+        mica::UUID KeyLetter = mica::map (mica::map (Clef, 
+          mica::item (ClefAccs, i)), mica::Letter);
+        if (KeyLetter != mica::Undefined) 
+          KeyAccLetters.Add (KeyLetter);
+      }
+
+      /**If the letter for LineSpace is in KeyAccLetters, return
+      KeyType, otherwise Natural*/
+      for (int i = 0; i < KeyAccLetters.n(); ++i)
+        if (KeyAccLetters.Contains (Letter)) return KeyType;
+
+        return mica::Natural;
+    }
+
+    ///Returns the notename of a LineSpace
+    static inline mica::UUID GetNoteName (mica::UUID Clef, mica::UUID Key, 
+      mica::UUID LineSpace, mica::UUID Accidental)
+    {
+      mica::UUID Note = mica::map (LineSpace, Clef);
+      mica::UUID Acc = (Accidental == mica::NoAccidentals ? 
+        GetAccidentalOfLineSpace (Clef, Key, LineSpace) : Accidental);
+      return mica::map (Note, Acc);
     }
   };
 }}

@@ -59,6 +59,52 @@ namespace bellebonnesage { namespace graph
   }
 #endif
 
+  ///Represents the number of extra staves to display per part
+  struct ExtraStaff
+  {
+    ExtraStaff() : PartID (0), NumExtra (0) {}
+
+    ExtraStaff (prim::count partID, prim::count numExtra) : 
+      PartID (0), NumExtra (0)
+    {
+      SetPartID (partID);
+      SetNumExtra (numExtra);
+    }
+
+    ~ExtraStaff() {}
+
+    prim::count GetPartID() { return PartID; }
+
+    void SetPartID (prim::count partID)
+    {
+      if (partID >= 0) PartID = partID;
+    }
+
+    prim::count GetNumExtra() { return NumExtra; }
+
+    void SetNumExtra (prim::count numExtra)
+    {
+      if (numExtra >= 0) NumExtra = numExtra;
+    }
+
+    struct ExtraStaffSortingComparator
+    {
+    public:
+      ExtraStaffSortingComparator() {}
+      ~ExtraStaffSortingComparator() {}
+
+      const int compareElements (ExtraStaff first, ExtraStaff second) const
+      {
+        return (first.GetPartID() < second.GetPartID()) ? -1 : 
+          ((second.GetPartID() < first.GetPartID()) ? 1 : 0);
+      }
+    };
+
+    private:
+      prim::count PartID;
+      prim::count NumExtra; 
+  };
+
   //-------------//
   //Serialization//
   //-------------//
@@ -132,6 +178,10 @@ namespace bellebonnesage { namespace graph
     
     ///Optional object to store typesetting features.
     prim::Pointer<TypesettingInfo> Typesetting;
+
+    /**Optional array of extra TypesettingInfo 
+    (for displaying more than one StampInstant per node)*/
+    prim::Array<prim::Pointer<TypesettingInfo>> ExtraTypesetting;
     
     ///Intended color.
     Color IntendedColor;

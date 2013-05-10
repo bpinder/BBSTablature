@@ -268,7 +268,7 @@ namespace bellebonnesage { namespace modern
     
     ///Copies the stamp references from an instant in a graph.
     void CopyFromInstant(graph::MusicNode* IslandInInstant,
-      prim::count GeometryPartCount)
+      prim::count GeometryPartCount, prim::Array<graph::ExtraStaff> ExtraStaves)
     {
       //Clear this object.
       Properties.Clear();
@@ -281,19 +281,44 @@ namespace bellebonnesage { namespace modern
       //Get the properties.
       graph::Instant::GetProperties(Properties, Isle); 
       
-      //Size the array to the total number of possible stamps (the part count).
-      n(GeometryPartCount);
+      /*Size the array to the total number of possible stamps 
+      (the part count + the number of extra staves)*/
+      int NumExtraStaves = 0;
+      for (int i = 0; i < ExtraStaves.n(); ++i)
+        NumExtraStaves += ExtraStaves[i].GetNumExtra();
+
+      n(GeometryPartCount + NumExtraStaves);
       Zero();
+
+      int StaffCount = 0;
+      int PartCount = 0;
       
-      //Travel through all the islands in this instant.
+      //Travel through all the islands (parts) in this instant.
       while(Isle)
       {
         //Copy the stamp pointer to the array.
         if(prim::Pointer<Stamp> s = Isle->Typesetting)
-          ith(s->PartID) = s;
+          ith (StaffCount) = s;
+
+        for (int i = 0; i < ExtraStaves.n(); ++i)
+        {
+          if (ExtraStaves[i].GetPartID() == PartCount)
+          {
+            for (int j = 0; j < Isle->ExtraTypesetting.n(); ++j)
+            {
+              if (prim::Pointer<Stamp> s = Isle->ExtraTypesetting[j])
+              {
+                StaffCount++;
+                ith (StaffCount) = s;
+              }
+            }
+          }
+        }
+        StaffCount++;
         
         //Go to the next island.
         Isle->Find(Isle, graph::ID(mica::InstantWiseLink));
+        PartCount++;
       }
     }
     
@@ -302,9 +327,9 @@ namespace bellebonnesage { namespace modern
     
     ///Constructor to copy an instant.
     StampInstant(graph::MusicNode* IslandInInstant,
-      prim::count GeometryPartCount)
+      prim::count GeometryPartCount, prim::Array<graph::ExtraStaff> ExtraStaves)
     {
-      CopyFromInstant(IslandInInstant, GeometryPartCount);
+      CopyFromInstant(IslandInInstant, GeometryPartCount, ExtraStaves);
     }
     
     ///Deep copies the stamp instant from another.

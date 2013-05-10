@@ -47,6 +47,9 @@ namespace bellebonnesage { namespace modern
   {
     ///Height of a single space in inches
     prim::number SpaceHeight;
+
+    ///The height of a tablature space in SpaceHeights
+    prim::number TabSpaceHeightRatio;
     
     ///Distance between staves
     prim::number StaffDistance;
@@ -77,6 +80,9 @@ namespace bellebonnesage { namespace modern
     
     ///Note stem height in line spaces.
     prim::count StemHeight;
+
+    ///Tablature stem height starting from the bottom of the staff
+    prim::count TabStemHeight;
         
     ///Extra hanging width of ledger line end closest to stem
     prim::number LedgerLineExtraInner;
@@ -112,6 +118,7 @@ namespace bellebonnesage { namespace modern
     void Default()
     {
       SpaceHeight = 0.05;
+      TabSpaceHeightRatio = 1.5;
       StaffDistance = 12.0;
       DefaultStemHeight = 7.5;//3.5;
       MaxDotsToConsider = 4;
@@ -124,6 +131,7 @@ namespace bellebonnesage { namespace modern
       StemWidth = 0.14;
       StemCapHeight = 0.8;
       StemHeight = 7;
+      TabStemHeight = 4;
       LedgerLineExtraInner = 0.25;
       LedgerLineExtraOuter = 0.20;
       LedgerLineScrunch = 0.96;

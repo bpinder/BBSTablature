@@ -1,20 +1,23 @@
+#define BELLEBONNESAGE_COMPILE_INLINE
+
+#include "../../bbs/BelleBonneSage.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MainComponent.h"
 
 
 //==============================================================================
-class TablatureApplication  : public JUCEApplication
+class TablatureApplication  : public juce::JUCEApplication
 {
 public:
     //==============================================================================
     TablatureApplication() {}
 
-    const String getApplicationName()       { return ProjectInfo::projectName; }
-    const String getApplicationVersion()    { return ProjectInfo::versionString; }
+    const juce::String getApplicationName()       { return ProjectInfo::projectName; }
+    const juce::String getApplicationVersion()    { return ProjectInfo::versionString; }
     bool moreThanOneInstanceAllowed()       { return true; }
 
     //==============================================================================
-    void initialise (const String& commandLine)
+    void initialise (const juce::String& commandLine)
     {
         // This method is where you should put your application's initialisation code..
 
@@ -36,7 +39,7 @@ public:
         quit();
     }
 
-    void anotherInstanceStarted (const String& commandLine)
+    void anotherInstanceStarted (const juce::String& commandLine)
     {
         // When another instance of the app is launched while this one is running,
         // this method is invoked, and the commandLine parameter tells you what
@@ -48,11 +51,11 @@ public:
         This class implements the desktop window that contains an instance of
         our MainContentComponent class.
     */
-    class MainWindow    : public DocumentWindow
+    class MainWindow    : public juce::DocumentWindow
     {
     public:
-        MainWindow()  : DocumentWindow ("MainWindow",
-                                        Colours::lightgrey,
+        MainWindow()  : juce::DocumentWindow ("MainWindow",
+                                        juce::Colours::lightgrey,
                                         DocumentWindow::allButtons)
         {
             setContentOwned (new MainContentComponent(), true);
@@ -81,7 +84,7 @@ public:
     };
 
 private:
-    ScopedPointer<MainWindow> mainWindow;
+    juce::ScopedPointer<MainWindow> mainWindow;
 };
 
 //==============================================================================

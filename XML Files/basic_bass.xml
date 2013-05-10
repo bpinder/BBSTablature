@@ -1,0 +1,100 @@
+<score>
+  <island id='island:0,0' across='island:0,1' down='island:1,0'>
+    <part id='do:12'>
+      <stringInstr id='sol:13' type='1' strings='4' semitones='22' display='2'>
+        <string note='MIDIValue43' semitones='22'/>
+        <string note='MIDIValue38' semitones='22'/>
+        <string note='MIDIValue33' semitones='22'/>
+        <string note='MIDIValue28' semitones='22'/>
+      </stringInstr>
+    </part>
+  </island>
+  <island id='island:0,1' across='island:0,2' down='island:1,1'>
+    <barline id='barline:14' value='StandardBarline'/>
+  </island>
+  <island id='island:0,2' across='island:0,3' down='island:1,2'>
+    <clef id='clef:16' value='BassClef'/>
+  </island>
+  <island id='island:0,3' across='island:0,4' down='island:1,3'>
+    <key id='key:17' key='AMajor'/>
+  </island>
+  <island id='island:0,4' across='island:0,5' down='island:1,4'>
+    <meter id='meter:18' value='FourFour'/>
+  </island>
+  <island id='island:0,5' across='island:0,6' down='island:1,5'>
+    <chord id='chord:21' next='chord:23' duration='1/4' beat='0' instant='1/4'>
+      <note id='note:22' position='LS-3' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,6' across='island:0,7' down='island:1,6'>
+    <chord id='chord:23' next='chord:28' duration='1/4' beat='1/4' instant='1/4'>
+      <note id='note:30' position='LS-2' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,7' across='island:0,8' down='island:1,7'>
+    <chord id='chord:28' next='chord:31' duration='1/4' beat='1/2' instant='1/4'>
+      <note id='note:29' position='LS-1' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,8' across='island:0,9' down='island:1,8'>
+    <chord id='chord:31' next='chord:40' duration='1/4' beat='3/4' instant='1/4'>
+      <note id='note:42' position='LS0' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,9' across='island:0,10' down='island:1,9'>
+    <barline id='barline:36' value='StandardBarline'/>
+  </island>
+  <island id='island:0,10' across='island:0,11' down='island:1,10'>
+    <chord id='chord:40' next='chord:43' duration='1/4' beat='0' instant='1/4'>
+      <note id='note:41' position='LS1' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,11' across='island:0,12' down='island:1,11'>
+    <chord id='chord:43' next='chord:48' duration='1/4' beat='1/4' instant='1/4'>
+      <note id='note:50' position='LS2' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,12' across='island:0,13' down='island:1,12'>
+    <chord id='chord:48' next='chord:51' duration='1/4' beat='1/2' instant='1/4'>
+      <note id='note:49' position='LS3' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,13' across='island:0,14' down='island:1,13'>
+    <chord id='chord:51' duration='1/4' beat='3/4' instant='1/4'>
+      <note id='note:56' position='LS4' modifier='NoAccidentals' string='0'/>
+    </chord>
+  </island>
+  <island id='island:0,14' down='island:1,14'>
+    <barline id='barline:54' value='FinalDoubleBarline'/>
+  </island>
+  <island id='island:1,0' across='island:1,1'>
+  </island>
+  <island id='island:1,1' across='island:1,2'>
+  </island>
+  <island id='island:1,2' across='island:1,3'>
+  </island>
+  <island id='island:1,3' across='island:1,4'>
+  </island>
+  <island id='island:1,4' across='island:1,5'>
+  </island>
+  <island id='island:1,5' across='island:1,6'>
+  </island>
+  <island id='island:1,6' across='island:1,7'>
+  </island>
+  <island id='island:1,7' across='island:1,8'>
+  </island>
+  <island id='island:1,8' across='island:1,9'>
+  </island>
+  <island id='island:1,9' across='island:1,10'>
+  </island>
+  <island id='island:1,10' across='island:1,11'>
+  </island>
+  <island id='island:1,11' across='island:1,12'>
+  </island>
+  <island id='island:1,12' across='island:1,13'>
+  </island>
+  <island id='island:1,13' across='island:1,14'>
+  </island>
+  <island id='island:1,14'>
+  </island>
+</score>

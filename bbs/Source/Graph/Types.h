@@ -57,9 +57,14 @@ namespace bellebonnesage { namespace graph
     mica::UUID Position;
     mica::UUID Modifier;
     bool Locked;
+
+    ///Optional stringIndex if this note belongs to a StringedInstrument part
+    prim::count StringIndex; 
+
     ///Constructor to set the node type.
     NoteNode() : MusicNode(mica::Note), Position(mica::Undefined),
-                 Modifier(mica::Undefined), Locked(false) {}
+                 Modifier(mica::Undefined), Locked(false),
+                 StringIndex (0) {}
     
     ///Virtual destructor.
     virtual ~NoteNode() {}
@@ -205,7 +210,8 @@ namespace bellebonnesage { namespace graph
     virtual prim::String ToString() {return "(Token)";}
     
     ///Enumerates the curent possible token types -- should go to MICA.
-    enum TokenTypes {Empty, Barline, Chord, Clef, KeySignature, Meter};
+    enum TokenTypes {Empty, Part, Barline, Chord, Clef, KeySignature, Meter, 
+      StringedInstrument};
 
     ///Custom callback for out-of-library subclasses.
     virtual void CustomCallback(void* Data1, void* Data2) {Data1 = Data2 = 0;}
@@ -226,6 +232,13 @@ namespace bellebonnesage { namespace graph
       SerializeProperties(s, Mode);
       prim::Debug >> ToString();
     }
+  };
+
+  ///Token that stores part information
+  struct PartToken : public Token
+  {
+      PartToken() : Token (mica::Do) {}
+      ~PartToken() {}
   };
 
   ///Token that stores a barline.

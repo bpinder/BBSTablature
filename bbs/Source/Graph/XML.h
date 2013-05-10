@@ -200,14 +200,40 @@ namespace bellebonnesage { namespace graph
             prim::String Type(ID(t->GetType()));
             Type.Replace("Token", "");
             Type.Replace("Signature", "");
+            Type.Replace("Do", "part");
             Type = Type.ToLower();
             
             //Write the header to the token.
-            if(Type == "barline" || Type == "chord" || Type == "key" ||
-              Type == "meter" || Type == "clef")
+            if(Type == "part" || Type == "barline" || Type == "chord" || 
+              Type == "key" || Type == "meter" || Type == "clef")
                 Out >> "    <" << Type << " id='" << t->UniqueID() << "'";
             
-            if(BarlineToken* bt = dynamic_cast<BarlineToken*>(t))
+            if (PartToken* pt = dynamic_cast<PartToken*>(t))
+            {
+              //Write Stringed Instrument
+              if (StringedInstrument* si = 
+                dynamic_cast<StringedInstrument*> (pt->Find (ID (mica::TokenLink))))
+              {
+                Out << ">";
+                Out >> "      <stringInstr id='" << si->UniqueID() << 
+                  "' type='" << si->GetInstrumentType() << 
+                  "' strings='" << si->GetDefaultNumberOfStrings() << 
+                  "' semitones='" << si->GetNumSemitones() << 
+                  "' display='" << si->GetDisplaySetting() << "'>";
+
+                const prim::List<StringedInstrument::InstrumentString>& strings = 
+                  si->GetStrings();
+                for (int s = 0; s < strings.n(); ++s)
+                   Out >> "        <string note='" << strings.ith (s).MidiNote << 
+                     "' semitones='" << strings.ith (s).Semitones << "'/>";
+
+                Out >> "      </stringInstr>";
+                Out >> "    </part>";
+              }
+              else 
+                Out << "/>";
+            }
+            else if(BarlineToken* bt = dynamic_cast<BarlineToken*>(t))
             {
               Out << " value='" << bt->Value << "'/>";
             }
@@ -354,6 +380,82 @@ namespace bellebonnesage { namespace graph
         NodeTable[NodeID] = en;
       }
     }
+
+    static void ReadStringedInstrument (ElementNode& en, PartToken* part)
+    {
+      //Find the Stringed Instrument element
+      const prim::List<prim::XML::Object*> partObjects = en.e->GetObjects();
+
+      for (int p = 0; p < partObjects.n(); ++p)
+      {
+        prim::XML::Element* siE = partObjects[p]->IsElement();
+
+        if (siE)
+        {
+          if (siE->GetName() == "stringInstr")
+          {
+            StringedInstrument* si = new StringedInstrument();
+                    
+            //Find the instrument type
+            prim::count typeIndex = 
+              prim::String (siE->GetAttributeValue ("type")).ToNumber();
+            if (typeIndex >= 0 && 
+              typeIndex < StringedInstrument::NUM_INSTRUMENT_TYPES)
+                si->SetInstrumentType(
+                  (StringedInstrument::InstrumentType) typeIndex);
+
+            //Find the number of strings
+            prim::count numStrings = 
+              prim::String (siE->GetAttributeValue ("strings")).ToNumber();
+            if (numStrings >= 4 && numStrings <= 8)
+              si->SetDefaultNumberOfStrings (
+                (StringedInstrument::StringNumber) numStrings);
+
+            //Find the number of semitones (frets)
+            prim::count semitones = 
+              prim::String (siE->GetAttributeValue ("semitones")).ToNumber();
+            if (semitones >= 0) 
+              si->SetNumSemitones (semitones);
+
+            //Find the display setting
+            prim::count displayIndex = 
+              prim::String (siE->GetAttributeValue ("display")).ToNumber();
+            if (displayIndex >= 0 && 
+              displayIndex < StringedInstrument::NUM_DISPLAY_TYPES)
+              si->SetDisplaySetting (
+                (StringedInstrument::StaffDisplaySetting) displayIndex);
+
+            //Find all string elements
+            const prim::List<prim::XML::Object*> siObjects = siE->GetObjects();
+
+            if (siObjects.n() > 0) si->RemoveAllStrings();
+
+            for (int s = 0; s < siObjects.n(); ++s)
+            {
+              prim::XML::Element* stringE = siObjects[s]->IsElement();
+
+              //Add the strings to the StringedInstrument
+              if (stringE)
+              {
+                if (stringE->GetName() == "string")
+                {
+                  mica::UUID note = mica::named (
+                    stringE->GetAttributeValue ("note"));
+                  prim::count semitones = prim::String (
+                    stringE->GetAttributeValue ("semitones")).ToNumber();
+
+                  if (note != mica::Undefined && semitones >= 0)
+                    si->AddString (note, semitones);
+                }
+              }
+            }
+
+            // Link the StringedInstrument to the part
+            part->AddLink (si, ID (mica::TokenLink));
+          }
+        }
+      }
+    }
     
     static void ReadIsland(ElementNode& Isle,
       prim::Table<prim::String, ElementNode>& NodeTable)
@@ -384,7 +486,14 @@ namespace bellebonnesage { namespace graph
         }
         
         ElementNode en(e);
-        if(NodeName == "clef")
+        if(NodeName == "part")
+        {
+          PartToken* pt = new PartToken;
+          en.n = pt;
+          Isle.n->AddLink(pt, ID (mica::TokenLink));
+          ReadStringedInstrument (en, pt);
+        }
+        else if(NodeName == "clef")
         {
           ClefToken* ct = new ClefToken;
           en.n = ct;

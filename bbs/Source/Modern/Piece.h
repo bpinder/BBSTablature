@@ -51,13 +51,16 @@ namespace bellebonnesage { namespace modern
   {
     ///Stores the music graph.
     graph::MusicGraph* Music;
+
+    ///Stores which parts display extra staves and how many
+    prim::Array<graph::ExtraStaff> ExtraStaves;
     
     //Objects for typesetting.
     const House* h;
     const Cache* c;
     const Typeface* t;
     const Font* f;
-    
+
     //Calculated...
     graph::Geometry GraphGeometry; 
         
@@ -78,10 +81,12 @@ namespace bellebonnesage { namespace modern
     bool Initialized() {return Music && h && c && t && f;}
     
     ///Initialize the typesetting objects.
-    void Initialize(graph::MusicGraph* Music, const House& h, const Cache& c,
-      const Typeface& t, const Font& f)
+    void Initialize(graph::MusicGraph* Music, 
+      const prim::Array<graph::ExtraStaff> ExtraStaves, const House& h, 
+      const Cache& c, const Typeface& t, const Font& f)
     {
       Piece::Music = Music;
+      Piece::ExtraStaves = ExtraStaves;
       Piece::h = &h;
       Piece::c = &c;
       Piece::t = &t;
@@ -124,7 +129,20 @@ namespace bellebonnesage { namespace modern
           }
           else
             prim::c >> "Warning: Stamp not created for MusicNode.";
-          
+
+          for (int i = 0; i < n->ExtraTypesetting.n(); ++i)
+          {
+            if (prim::Pointer<Stamp> s = n->ExtraTypesetting[i])
+            {
+              if(s->NeedsTypesetting)
+              {
+                Engraver.Engrave(n, *s, true);
+                d.s.AdvanceAccidentalState();
+                s->NeedsTypesetting = false;
+              }
+            }
+          }
+
           n->Find<graph::MusicNode>(n, graph::ID(mica::PartWiseLink));
         }
         m->Find<graph::MusicNode>(m, graph::ID(mica::InstantWiseLink));
@@ -148,7 +166,14 @@ namespace bellebonnesage { namespace modern
             s->Clear(n);
           else
             prim::c >> "Error: Non-Stamp class detected while clearing.";
-          
+
+          for (int i = 0; i < n->ExtraTypesetting.n(); ++i)
+          {
+            if (!n->ExtraTypesetting[i])
+              n->ExtraTypesetting[i] = new Stamp (n);
+            else if (prim::Pointer<Stamp> s = n->ExtraTypesetting[i])
+              s->Clear (n);
+          }
           n->Find<graph::MusicNode>(n, graph::ID(mica::PartWiseLink));
         }
         m->Find<graph::MusicNode>(m, graph::ID(mica::InstantWiseLink));
@@ -170,16 +195,57 @@ namespace bellebonnesage { namespace modern
             n->Typesetting = new Stamp(n);
           else if(!prim::Pointer<Stamp>(n->Typesetting))
             prim::c >> "Error: Non-Stamp class detected while clearing.";
+
+          for (int i = 0; i < n->ExtraTypesetting.n(); ++i)
+          {
+            if (!n->ExtraTypesetting[i])
+              n->ExtraTypesetting[i] = new Stamp(n);
+          }
           
           n->Find<graph::MusicNode>(n, graph::ID(mica::PartWiseLink));
         }
         m->Find<graph::MusicNode>(m, graph::ID(mica::InstantWiseLink));
       }
     }
+
+    ///Assigns the number of extra staves to each MusicNode
+    void AssignExtraStavesToNodes()
+    {
+      int Part = 0;
+      graph::MusicNode* m = 
+        dynamic_cast<graph::MusicNode*>(Music->GetTop());
+      while(m)
+      {
+        graph::MusicNode* n = m;
+        while(n)
+        {
+          if (ExtraStaves.n() > 0)
+          {
+            for (int i = 0; i < ExtraStaves.n(); ++i)
+            {
+              if (ExtraStaves[i].GetPartID() == Part)
+              {
+                n->ExtraTypesetting.n (ExtraStaves[i].GetNumExtra());
+                n->ExtraTypesetting.Zero();
+                break;
+              }
+              else n->ExtraTypesetting.n (0);
+            }
+          }
+          else n->ExtraTypesetting.n (0);
+          n->Find<graph::MusicNode>(n, graph::ID(mica::PartWiseLink));
+        }
+        m->Find<graph::MusicNode>(m, graph::ID(mica::InstantWiseLink));
+        Part++;
+      }
+    }
     
     ///Typesets the islands.
     void Typeset(bool ClearAll = false)
     {
+      //Assign the number of extra staves to each MusicNode
+      AssignExtraStavesToNodes();
+
       //Clear or initialize the typesetting.
       if(ClearAll)
         ClearTypesetting();
@@ -297,6 +363,49 @@ namespace bellebonnesage { namespace modern
       //Return the furthest right point on the leading edge.
       return FurthestRight;
     }
+
+    ///Determines the number of lines per staff and whether each staff is a tab
+    void DetermineStaffInfo (prim::Array<StaffInfo> &Staves, prim::count PartCount, 
+      prim::count NumExtraStaves)
+    {
+      Staves.Clear();
+      Staves.n (PartCount + NumExtraStaves);
+
+      int Part = 0;
+      for(prim::count j = 0; j < Staves.n(); j++)
+      {
+        //Set defaults;
+        Staves[j].Lines = 5;
+        Staves[j].IsTab = false;
+
+        /**Look for PartTokens in first column and see if they are linked 
+        to StringedInstruments*/
+        if (graph::Island* Isle = GraphGeometry.LookupIsland (Part, 0))
+        {
+          if(graph::PartToken* pt = dynamic_cast<graph::PartToken*>(
+            Isle->Find(graph::ID(mica::TokenLink))))
+          {
+            if (graph::StringedInstrument* si = 
+              dynamic_cast<graph::StringedInstrument*>(pt->Find(
+              graph::ID (mica::TokenLink))))
+            {
+              if (si->GetDisplaySetting() == graph::StringedInstrument::TAB)
+              {
+                Staves[j].Lines = si->GetStrings().n();
+                Staves[j].IsTab = true;
+              }
+              else if (si->GetDisplaySetting() == graph::StringedInstrument::STANDARD_AND_TAB)
+              {
+                j++;
+                Staves[j].Lines = si->GetStrings().n();
+                Staves[j].IsTab = true;
+              }
+            }
+          }
+        }
+        Part++;
+      }
+    }
     
     ///Breaks the music up into systems.
     void CreateSystems(prim::List<System>& Systems,
@@ -305,10 +414,19 @@ namespace bellebonnesage { namespace modern
       //Initialize a list of systems.
       Systems.RemoveAll();
 
+      int NumExtraStaves = 0;
+      for (int i = 0; i < ExtraStaves.n(); ++i)
+          NumExtraStaves += ExtraStaves[i].GetNumExtra(); 
+
       //Cache the part and instant count for reference.
       const prim::count PartCount = GraphGeometry.GetNumberOfParts();
       const prim::count InstantCount = GraphGeometry.GetNumberOfInstants();
-      
+
+      //Determine staff info
+      prim::Array<StaffInfo> Staves;
+      if (InstantCount > 0)
+        DetermineStaffInfo (Staves, PartCount, NumExtraStaves);
+
       /*Each system is delineated by a start and end instant, that is to say a
       system contains a continuous range of instants from the total group of
       instants.*/
@@ -334,8 +452,9 @@ namespace bellebonnesage { namespace modern
         
         //Start new system and create entries for the leading edge.
         System& Current = Systems.Add();
-        Current.LeadingEdge.n(PartCount);
+        Current.LeadingEdge.n(PartCount + NumExtraStaves);
         Current.LeadingEdge.Zero();
+        Current.Staves = Staves;
         
         /*Deep copy all the repeated elements to the front of the system. The
         stamps need to be deep copied because repeated elements are technically
@@ -360,7 +479,7 @@ namespace bellebonnesage { namespace modern
         {
           //Create the stamp instant from the graph instant.
           Current.Instants.Add() = StampInstant(
-            GraphGeometry.TopMostIslandInInstant(i), PartCount);
+            GraphGeometry.TopMostIslandInInstant(i), PartCount, ExtraStaves);
           
           //Advance leading edge.
           prim::number FurthestRight =

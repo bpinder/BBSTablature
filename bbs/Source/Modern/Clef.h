@@ -47,8 +47,12 @@ namespace bellebonnesage { namespace modern
   struct Clef
   {
     ///Engrave the different forms of clefs.
-    static void Engrave(Directory& d, Stamp& s, mica::UUID c, prim::number Size)
+    static void Engrave(Directory& d, Stamp& s, mica::UUID c, prim::number Size, 
+      bool isOnExtraStaff = false)
     {
+      if (d.s.IsTabStaff() || (d.s.IsStandardAndTabStaff() && isOnExtraStaff)) 
+        return;
+
       prim::unicode u = (c == mica::TrebleClef ? 0x0041 : 0x0042);
       prim::number LSPosition = (c == mica::TrebleClef ? -1.0 : 1.0);
       {

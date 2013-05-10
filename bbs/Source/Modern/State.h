@@ -49,9 +49,12 @@ namespace bellebonnesage { namespace modern
     mica::UUID ActiveClef;
     Chord::State Previous;
     Chord::State Current;
+    mica::UUID ActiveKey;
     mica::UUID NextAccidentals[7];
     mica::UUID ActiveAccidentals[7];
     mica::UUID KeyAccidentals[7];
+
+    graph::StringedInstrument* ActiveInstrument;
     
     mica::UUID ConsumeAccidental(prim::count s, mica::UUID a)
     {
@@ -110,8 +113,22 @@ namespace bellebonnesage { namespace modern
       for(prim::count i = 0; i < 7; i++)
         NextAccidentals[i] = ActiveAccidentals[i] = KeyAccidentals[i];
     }
+
+    bool IsTabStaff()
+    {
+      if (ActiveInstrument)
+        return (ActiveInstrument->GetDisplaySetting() == graph::StringedInstrument::TAB);
+      return false;
+    }
+
+    bool IsStandardAndTabStaff()
+    {
+      if (ActiveInstrument)
+        return (ActiveInstrument->GetDisplaySetting() == graph::StringedInstrument::STANDARD_AND_TAB);
+      return false;
+    }
     
-    State() : ActiveClef(mica::Undefined)
+    State() : ActiveClef(mica::Undefined), ActiveKey(mica::Undefined), ActiveInstrument(0)
     {
       for(prim::count i = 0; i < 7; i++)
         NextAccidentals[i] = ActiveAccidentals[i] = KeyAccidentals[i] = 
